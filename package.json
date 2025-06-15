@@ -1,6 +1,6 @@
 {
   "name": "nootifyme",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "nootifyme helper functions",
   "main": "./dist/index.js",
   "homepage": "https://nootifyme.com/",
