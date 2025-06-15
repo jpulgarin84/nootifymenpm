@@ -1,0 +1,18 @@
+/dist
+/node_modules
+/testfolder
+
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+
+# local env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local

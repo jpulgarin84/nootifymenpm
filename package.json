@@ -1,0 +1,29 @@
+{
+  "name": "nootifyme",
+  "version": "1.0.3",
+  "description": "nootifyme helper functions",
+  "main": "./dist/index.js",
+  "homepage": "https://nootifyme.com/",
+  "module": "./dist/index.mjs",
+  "repository": {
+    "url": "https://github.com/jmplabs/nootifyme.git"
+  },
+  "keywords": [
+    "nootifyme",
+    "alerting",
+    "monitoring"
+  ],
+  "scripts": {
+    "build": "tsup"
+  },
+  "author": "jmplabs",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^24.0.1",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "dotenv": "^16.5.0"
+  }
+}

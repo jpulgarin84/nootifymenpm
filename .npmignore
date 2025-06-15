@@ -1,0 +1,21 @@
+/node_modules
+/src
+/testfolder
+tsconfig.json
+tsup.config.ts
+.gitignore
+.npmignore
+
+#local env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+#misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
