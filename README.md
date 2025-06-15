@@ -1,4 +1,4 @@
-# @nootifyme/helper
+# nootifyMe
 
 A lightweight helper package for integrating with the [NootifyMe](https://nootifyme.com) platform — a real-time push notification service that alerts developers and teams the moment something breaks.
 
