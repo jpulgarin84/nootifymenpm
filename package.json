@@ -1,6 +1,6 @@
 {
   "name": "nootifyme",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "nootifyme helper functions",
   "main": "./dist/index.js",
   "homepage": "https://nootifyme.com/",
@@ -23,7 +23,5 @@
     "tsup": "^8.5.0",
     "typescript": "^5.8.3"
   },
-  "dependencies": {
-    "dotenv": "^16.5.0"
-  }
+  "dependencies": {}
 }
