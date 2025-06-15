@@ -1,23 +1,57 @@
-
-type options = {
+type advanced = {
     title?: string;
     message: string;
     silent?: boolean;
 }
-type message = string
-type input = message | options
-
+type simple = string
 /**
  * Sends a notification to the nootifyme API.
- * Parameters can be either:
- * - string: will send log message to console, and send a push notification. For Title will default to project name.
- * - object: { message: string, title?: string, silent?: boolean }: Where you can speficy more details an also set silent to true to not send a push notification but still capture the log in nootifyme to view from the app. 
- * @param {string } input The message to send.
- * or
- * @param {object} input Full object with message, title, and silent.
+ * 
+ * 
+ * 
+ * Simple Usage:
+ * -------------
+ * 
+ * // Simple usage - just a string. This will send a notification with the messsage and the title will be set automatically to the project name.
+ * 
+ * @example
+ * await nootifyMe("Hello world");
+ * 
+ * When using a string input, the function will:
+ * - message: The notification message (required)
+ * - title: Will default to your project name. This will be set automatically by the nootify_me API.
+ * - silent: Will default to false (sends push notification). This will be set automatically by the nootify_me API.
+ * 
+ * Advanced Usage:
+ * --------------
+ * // Advanced usage - setup message, title, and if you want to senda a push notification or just want to capture the log in nootifyme to view from the app without sending a push notification.
+ * 
+ * @example
+ * await nootifyMe({
+ *   message: "Hello world",
+ *   title: "Custom Title",
+ *   silent: false
+ * });
+ * 
+ * 
+ * When using an object input, you can configure:
+ * - message: (Required) The notification message 
+ * - title: (Optional) custom title for the notification. If not provided, defaults to project name
+ * - silent: (Optional) boolean flag. If true, only logs the message without sending a push notification.
+ *           If not provided, defaults to false (sends push notification)
+ * 
+ * @param {simple | advanced} input - The notification input. Can be either a string (simple) or an object (advanced)
+ * 
  * @returns {Promise<void>} A promise that resolves when the notification is sent.
+ * 
+ * @throws {Error} If:
+ *   - Not in a Node.js environment
+ *   - NOOTIFY_API_KEY is not set
+ *   - No message is provided
+ *   - Fetch API is not available
  */
-export const nootifyMe = async (input: string | { message: string, title?: string, silent?: boolean }) => {
+export const nootifyMe = async (input: simple | advanced) => {
+    // export const nootifyMe = async (input: string | { message: string, title?: string, silent?: boolean }) => {
     try {
         // Check if we're in a Node.js environment
         if (typeof process === 'undefined' || !process.env) {

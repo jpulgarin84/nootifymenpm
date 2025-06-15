@@ -1,56 +1,76 @@
 # @nootifyme/helper
 
-BETA.
-
-Helper functions for integrating with the [NootifyMe](https://nootifyme.com) platform — a real-time push notification service that alerts developers and teams the moment something breaks.
+A lightweight helper package for integrating with the [NootifyMe](https://nootifyme.com) platform — a real-time push notification service that alerts developers and teams the moment something breaks.
 
 ## ✨ Features
 
-- Easy-to-use utilities for authenticating and interacting with NootifyMe
-- Built-in support for sending server alerts
-- Helper methods for formatting payloads and validating tokens
+- Simple API for sending real-time push notifications
+- Built-in support for silent logging mode
 - TypeScript support included
+- Lightweight and easy to integrate
 
 ## 📦 Installation
 
 ```bash
-npm install @nootifyme/helpers
-# or
-yarn add @nootifyme/helpers
+npm install nootifyme
 ```
 
-## 🚀 Usage
+## 🚀 Quick Start
 
-First, set up your environment variables in your `.env` file:
+1. Create an account at [nootifyme.com](https://nootifyme.com) and get your API key from the dashboard
+
+2. Set up your environment variables in your `.env` file:
 
 ```env
 NOOTIFY_API_KEY=your_api_key_here
-NOOTIFY_ACTIVE=true  # Set to "true" to enable notifications, "false" to disable
+NOOTIFY_ACTIVE=true  # Set to "true" to enable notifications, "false" to disable. Perfect for dev mode. Set to false to not incurr in usage.
 ```
 
-Then use the package in your code:
+3. Use the package in your code:
 
 ```ts
-import { nootifyMe } from "@nootifyme/helper";
+import { nootifyMe } from "nootifyme";
 
 // Simple usage with just a message
 await nootifyMe("🚨 API error on production!");
 
-// Advanced usage with options
+// Advanced usage with custom title and silent mode
 await nootifyMe({
   message: "🚨 API error on production!",
   title: "Production Alert",
-  silent: false,
+  silent: false, // Set to true to only log without sending push notification
 });
 ```
 
-## 🔧 Available Functions
+## 📖 API Reference
 
 ### `nootifyMe(input: string | { message: string, title?: string, silent?: boolean }): Promise<void>`
 
 Sends a push notification to NootifyMe from your backend service.
 
-**Parameters:**
+#### Simple Usage (String Input)
+
+```ts
+await nootifyMe("Your message here");
+```
+
+When using a string input:
+
+- `message`: The notification message (required)
+- `title`: Defaults to your project name (set automatically by NootifyMe)
+- `silent`: Defaults to false (sends push notification)
+
+#### Advanced Usage (Object Input)
+
+```ts
+await nootifyMe({
+  message: "Your message here",
+  title: "Custom Title", // Optional
+  silent: false, // Optional: Set to true to only log without sending push notification
+});
+```
+
+#### Parameters
 
 - `input` can be either:
   - `string`: A simple message to send
@@ -59,42 +79,20 @@ Sends a push notification to NootifyMe from your backend service.
     - `title` (string) — Optional. Custom title for the notification
     - `silent` (boolean) — Optional. Set to true to only log the message without sending a push notification
 
-### `validatePayload(payload: any): boolean`
+#### Error Handling
 
-Lightweight helper to ensure your alert payload is correctly structured before sending.
+The function will throw an error if:
 
-### `formatMessage(service: string, error: string): string`
-
-Formats a clean, readable message for the notification.
-
-## ✅ Example
-
-```ts
-import { sendAlert, formatMessage } from "@nootifyme/helpers";
-
-const service = "aws-spend-monitor";
-const error = "Threshold exceeded: $210.52";
-
-const message = formatMessage(service, error);
-
-await sendAlert({
-  message,
-  level: "critical",
-  service,
-});
-```
-
-## 🧪 Testing
-
-You can use tools like:
-
-- [Smee.io](https://smee.io/) for webhook testing
-- [ngrok](https://ngrok.com/) to expose your local server for testing alerts
+- Not in a Node.js environment
+- NOOTIFY_API_KEY is not set
+- No message is provided
+- Fetch API is not available
 
 ## 🛡️ Requirements
 
-- Node.js v14 or later
-- Used with NootifyMe backend API credentials
+- Node.js environment
+- NootifyMe API key
+- Fetch API support
 
 ## 🧠 About
 
