@@ -1,6 +1,6 @@
-# nootifyMe
+# nootify_me
 
-A lightweight helper package for integrating with the [NootifyMe](https://nootifyme.com) platform — a real-time push notification service that alerts developers and teams the moment something breaks.
+A lightweight helper package for integrating with the [nootify_me](https://nootifyme.com) platform — a real-time push notification service that alerts developers and teams the moment something breaks.
 
 ## ✨ Features
 
@@ -22,8 +22,8 @@ npm install nootifyme
 2. Set up your environment variables in your `.env` file:
 
 ```env
-NOOTIFY_API_KEY=your_api_key_here
-NOOTIFY_ACTIVE=true  # Set to "true" to enable notifications, "false" to disable. Perfect for dev mode. Set to false to not incurr in usage.
+NEXT_PUBLIC_NOOTIFY_API_KEY=your_api_key_here
+NEXT_PUBLIC_NOOTIFY_ACTIVE=true  # Set to "true" to enable notifications, "false" to disable. Perfect for dev mode. Set to false to not incur in usage.
 ```
 
 3. Use the package in your code:
@@ -44,7 +44,7 @@ await nootifyMe({
 
 ## 📖 API Reference
 
-### `nootifyMe(input: string | { message: string, title?: string, silent?: boolean }): Promise<void>`
+### `nootifyMe(input: string | { message: string, title?: string, silent?: boolean }): Promise<{success: true} | {error: any}>`
 
 Sends a push notification to NootifyMe from your backend service.
 
@@ -54,11 +54,11 @@ Sends a push notification to NootifyMe from your backend service.
 await nootifyMe("Your message here");
 ```
 
-When using a string input:
+#### Parameters for Simple usage
 
-- `message`: The notification message (required)
-- `title`: Defaults to your project name (set automatically by NootifyMe)
-- `silent`: Defaults to false (sends push notification)
+- `string`: A simple message to send
+
+When using a with simple usage all you need to do is pass in a string. The title of the push notification will default to your project name (set automatically by the nootify_me API)
 
 #### Advanced Usage (Object Input)
 
@@ -70,23 +70,34 @@ await nootifyMe({
 });
 ```
 
-#### Parameters
+#### Parameters for Advanced usage
 
-- `input` can be either:
-  - `string`: A simple message to send
-  - `object`:
-    - `message` (string) — Required. The alert message
-    - `title` (string) — Optional. Custom title for the notification
-    - `silent` (boolean) — Optional. Set to true to only log the message without sending a push notification
+- `object`:
+  - `message` (string) — Required. The alert message
+  - `title` (string) — Optional. Custom title for the notification
+  - `silent` (boolean) — Optional. Set to true to only log the message without sending a push notification
+
+#### Return Value
+
+The function returns a Promise that resolves to:
+
+- `{ success: true }` when the notification is sent successfully
+- `{ error: any }` when an error occurs (instead of throwing)
 
 #### Error Handling
 
-The function will throw an error if:
+The function will return an error object (not throw) if:
 
 - Not in a Node.js environment
-- NOOTIFY_API_KEY is not set
+- NEXT_PUBLIC_NOOTIFY_API_KEY is not set
 - No message is provided
 - Fetch API is not available
+- API returns an error response
+
+#### Environment Variables
+
+- `NEXT_PUBLIC_NOOTIFY_API_KEY` (required): Your nootify_me API key
+- `NEXT_PUBLIC_NOOTIFY_ACTIVE` (optional): Set to "true" to enable notifications, any other value disables them
 
 ## 🛡️ Requirements
 
@@ -108,4 +119,4 @@ Contributions welcome! Please open issues or pull requests if you have ideas for
 
 ## 📄 License
 
-MIT © [Jose Pulgarin](https://nootifyme.com)
+MIT © [JMPLABS LLC](https://nootifyme.com)

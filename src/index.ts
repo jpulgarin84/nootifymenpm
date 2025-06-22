@@ -12,7 +12,7 @@ type simple = string
  * Simple Usage:
  * -------------
  * 
- * // Simple usage - just a string. This will send a notification with the messsage and the title will be set automatically to the project name.
+ * // Simple usage - just a string. This will send a notification with the message and the title will be set automatically to the project name.
  * 
  * @example
  * await nootifyMe("Hello world");
@@ -24,7 +24,7 @@ type simple = string
  * 
  * Advanced Usage:
  * --------------
- * // Advanced usage - setup message, title, and if you want to senda a push notification or just want to capture the log in nootifyme to view from the app without sending a push notification.
+ * // Advanced usage - setup message, title, and if you want to send a push notification or just want to capture the log in nootify_me to view from the app without sending a push notification.
  * 
  * @example
  * await nootifyMe({
@@ -42,13 +42,19 @@ type simple = string
  * 
  * @param {simple | advanced} input - The notification input. Can be either a string (simple) or an object (advanced)
  * 
- * @returns {Promise<void>} A promise that resolves when the notification is sent.
+ * @returns {Promise<{success: true} | {error: any}>} A promise that resolves with success object or error object.
  * 
  * @throws {Error} If:
  *   - Not in a Node.js environment
- *   - NOOTIFY_API_KEY is not set
+ *   - NEXT_PUBLIC_NOOTIFY_API_KEY is not set
  *   - No message is provided
  *   - Fetch API is not available
+ *   - API returns an error response
+ * 
+ * Environment Variables:
+ * ---------------------
+ * - NEXT_PUBLIC_NOOTIFY_API_KEY: Your nootifyme API key (required)
+ * - NEXT_PUBLIC_NOOTIFY_ACTIVE: Set to "true" to enable notifications, any other value disables them
  */
 export const nootifyMe = async (input: simple | advanced) => {
     // export const nootifyMe = async (input: string | { message: string, title?: string, silent?: boolean }) => {
@@ -58,11 +64,11 @@ export const nootifyMe = async (input: simple | advanced) => {
             throw new Error("This package must be used in a Node.js environment");
         }
 
-        const APIKEY = process.env.NOOTIFY_API_KEY;
-        const ACTIVE = process.env.NOOTIFY_ACTIVE === "true";
+        const APIKEY = process.env.NEXT_PUBLIC_NOOTIFY_API_KEY;
+        const ACTIVE = process.env.NEXT_PUBLIC_NOOTIFY_ACTIVE === "true";
 
         if (!APIKEY) {
-            throw new Error("NOOTIFY_API_KEY environment variable is required. Please add it to your .env file.");
+            throw new Error("NOOTIFY_API_KEY environment variable is required. Please add it to your .env file.");// fix this name is wrong
         }
 
         let message = typeof input === "string"
@@ -84,7 +90,7 @@ export const nootifyMe = async (input: simple | advanced) => {
 
         if (ACTIVE !== true) {
             console.log("nootify_me is not active");
-            return;
+            return
         }
 
         if (typeof fetch !== 'function') {
@@ -102,12 +108,11 @@ export const nootifyMe = async (input: simple | advanced) => {
             }),
         });
 
-        // if (!response.ok) {
-        //     const errorData = await response.json().catch(() => null);
-        //     throw new Error(`Failed to send notification: ${response.status} ${response.statusText}${errorData ? ` - ${JSON.stringify(errorData)}` : ''}`);
-        // }
+        const responseData = await response.json();
+
+        if (responseData.error) throw new Error(responseData.error);
+        return { success: true }
     } catch (error) {
-        console.error("nootify_me error:", error);
-        throw error;
+        return { error: error }
     }
 };
