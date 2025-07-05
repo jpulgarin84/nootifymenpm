@@ -1,7 +1,7 @@
 type advanced = {
     title?: string;
     message: string;
-    silent?: boolean;
+    broadcast?: boolean;
 }
 type simple = string
 /**
@@ -82,9 +82,9 @@ export const nootifyMe = async (input: simple | advanced) => {
             ? undefined
             : input.title ?? undefined;
 
-        let silent = typeof input === "string"
+        let broadcast = typeof input === "string"
             ? false
-            : input.silent ?? false
+            : input.broadcast ?? false
 
         console.log("From nootify_me: ", input);
 
@@ -104,7 +104,7 @@ export const nootifyMe = async (input: simple | advanced) => {
                 token: APIKEY,
                 title: title,
                 message: message,
-                silent: silent,
+                broadcast: broadcast,
             }),
         });
 
