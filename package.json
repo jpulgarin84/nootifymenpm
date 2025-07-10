@@ -1,34 +1,34 @@
 {
-  "name": "nootifyme",
-  "version": "2.0.0",
-  "description": "nootifyme helper functions",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+    "name": "nootifyme",
+    "version": "2.0.1",
+    "description": "nootifyme helper functions",
+    "main": "./dist/index.js",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.js"
+        }
+    },
+    "homepage": "https://nootifyme.com/",
+    "repository": {
+        "url": "https://github.com/jmplabs/nootifyme.git"
+    },
+    "keywords": [
+        "nootifyme",
+        "alerting",
+        "monitoring"
+    ],
+    "scripts": {
+        "build": "tsup"
+    },
+    "author": "jmplabs",
+    "license": "MIT",
+    "devDependencies": {
+        "@types/node": "^24.0.1",
+        "tsup": "^8.5.0",
+        "typescript": "^5.8.3"
     }
-  },
-  "homepage": "https://nootifyme.com/",
-  "repository": {
-    "url": "https://github.com/jmplabs/nootifyme.git"
-  },
-  "keywords": [
-    "nootifyme",
-    "alerting",
-    "monitoring"
-  ],
-  "scripts": {
-    "build": "tsup"
-  },
-  "author": "jmplabs",
-  "license": "MIT",
-  "devDependencies": {
-    "@types/node": "^24.0.1",
-    "tsup": "^8.5.0",
-    "typescript": "^5.8.3"
-  }
 }

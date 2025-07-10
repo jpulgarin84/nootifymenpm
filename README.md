@@ -27,15 +27,15 @@ noot("A user just signed up!");
 
 // Advanced usage with a title
 noot({
-  title: "New Feature Used",
-  message: "A user just used the new feature for the first time!",
+    title: "New Feature Used",
+    message: "A user just used the new feature for the first time!",
 });
 
 // Send a push notification to all your subscribers
 noot({
-  title: "Big News!",
-  message: "We just launched a new feature!",
-  broadcast: true,
+    title: "Big News!",
+    message: "We just launched a new feature!",
+    broadcast: true,
 });
 ```
 
@@ -46,10 +46,10 @@ First, get your API key from the [nootify_me dashboard](https://nootifyme.com). 
 The package will automatically detect the correct variable based on your framework.
 
 <details>
-<summary><b>Next.js</b></summary>
+    <summary><b>Next.js</b></summary>
 
 For **server-side** components or API routes, use `.env.local`:
-```env
+    ```env
 # .env.local
 NOOTIFY_BACKEND_API_KEY=your_api_key_here
 ```
@@ -117,9 +117,9 @@ noot("Something important happened.");
 
 ```ts
 noot({
-  title: "User Action",
-  message: "A user has upgraded their plan.",
-  broadcast: false, // Default
+    title: "User Action",
+    message: "A user has upgraded their plan.",
+    broadcast: false, // Default
 });
 ```
 
@@ -128,7 +128,7 @@ noot({
 nootify_me is a notification service that delivers **critical alerts straight to your phone**. Designed for developers, small teams, and solopreneurs who are tired of missing important events buried in email or Slack.
 
 > Something breaks. You don't know. Time passes.  
-> The AWS bill arrives. It's bad. You spiral.  
+> The server bill arrives. It's bad. You spiral.  
 > Now you use **nootify_me**.
 
 ## 👨‍💻 Contributing
