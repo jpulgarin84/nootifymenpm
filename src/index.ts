@@ -1,118 +1,126 @@
-type advanced = {
+// --- Type Definitions ---
+type AdvancedInput = {
     title?: string;
     message: string;
     broadcast?: boolean;
+};
+
+type SimpleInput = string;
+
+// --- Environment-Aware Functions ---
+
+function getApiKey(): string | null {
+    if (typeof process === 'undefined' || !process.env) return null;
+    return process.env.NOOTIFY_BACKEND_API_KEY ||
+        process.env.NEXT_PUBLIC_NOOTIFY_API_KEY ||
+        process.env.VITE_NOOTIFY_API_KEY ||
+        process.env.REACT_APP_NOOTIFY_API_KEY ||
+        null;
 }
-type simple = string
+
 /**
- * Sends a notification to the nootifyme API.
- * 
- * 
- * 
- * Simple Usage:
- * -------------
- * 
- * // Simple usage - just a string. This will send a notification with the message and the title will be set automatically to the project name.
- * 
- * @example
- * await nootifyMe("Hello world");
- * 
- * When using a string input, the function will:
- * - message: The notification message (required)
- * - title: Will default to your project name. This will be set automatically by the nootify_me API.
- * - silent: Will default to false (sends push notification). This will be set automatically by the nootify_me API.
- * 
- * Advanced Usage:
- * --------------
- * // Advanced usage - setup message, title, and if you want to send a push notification or just want to capture the log in nootify_me to view from the app without sending a push notification.
- * 
- * @example
- * await nootifyMe({
- *   message: "Hello world",
- *   title: "Custom Title",
- *   silent: false
- * });
- * 
- * 
- * When using an object input, you can configure:
- * - message: (Required) The notification message 
- * - title: (Optional) custom title for the notification. If not provided, defaults to project name
- * - silent: (Optional) boolean flag. If true, only logs the message without sending a push notification.
- *           If not provided, defaults to false (sends push notification)
- * 
- * @param {simple | advanced} input - The notification input. Can be either a string (simple) or an object (advanced)
- * 
- * @returns {Promise<{success: true} | {error: any}>} A promise that resolves with success object or error object.
- * 
- * @throws {Error} If:
- *   - Not in a Node.js environment
- *   - NEXT_PUBLIC_NOOTIFY_API_KEY is not set
- *   - No message is provided
- *   - Fetch API is not available
- *   - API returns an error response
- * 
- * Environment Variables:
- * ---------------------
- * - NEXT_PUBLIC_NOOTIFY_API_KEY: Your nootifyme API key (required)
- * - NEXT_PUBLIC_NOOTIFY_ACTIVE: Set to "true" to enable notifications, any other value disables them
+ * Intelligently checks if notifications are enabled from conventional environment variables.
+ * It prioritizes backend keys over frontend keys.
+ * @returns {boolean} True if active, false otherwise.
  */
-export const nootifyMe = async (input: simple | advanced) => {
-    // export const nootifyMe = async (input: string | { message: string, title?: string, silent?: boolean }) => {
+function isNootifyActive(): boolean {
+    if (typeof process === 'undefined' || !process.env) {
+        return true; // Default to active in non-Node.js environments
+    }
+
+    const activeEnv = process.env.NOOTIFY_ACTIVE ||
+        process.env.NEXT_PUBLIC_NOOTIFY_ACTIVE ||
+        process.env.VITE_NOOTIFY_ACTIVE ||
+        process.env.REACT_APP_NOOTIFY_ACTIVE;
+
+    // If no active variable is set, it's active by default.
+    // If it is set, it must be explicitly "true".
+    return activeEnv === undefined || activeEnv.toLowerCase() === 'true';
+}
+
+// --- Core `noot` Logic ---
+
+/**
+ * Sends a notification without blocking the main thread.
+ * This function is not meant to be called directly.
+ * @param {SimpleInput | AdvancedInput} input The notification to send.
+ */
+async function sendNootification(input: SimpleInput | AdvancedInput) {
     try {
-        // Check if we're in a Node.js environment
-        if (typeof process === 'undefined' || !process.env) {
-            throw new Error("This package must be used in a Node.js environment");
+        const apiKey = getApiKey();
+        const isActive = isNootifyActive();
+
+        if (!apiKey) {
+            const errorMessage = "Nootify API Key not found. Please set one of the following environment variables: NOOTIFY_BACKEND_API_KEY, NEXT_PUBLIC_NOOTIFY_API_KEY, VITE_NOOTIFY_API_KEY, REACT_APP_NOOTIFY_API_KEY";
+            console.error(errorMessage);
+            return; // No throw to avoid unhandled promise rejection
         }
 
-        const APIKEY = process.env.NEXT_PUBLIC_NOOTIFY_API_KEY;
-        const ACTIVE = process.env.NEXT_PUBLIC_NOOTIFY_ACTIVE === "true";
-
-        if (!APIKEY) {
-            throw new Error("NOOTIFY_API_KEY environment variable is required. Please add it to your .env file.");// fix this name is wrong
+        if (!isActive) {
+            // This is not an error, so a simple log is fine.
+            console.log("Nootify is disabled (NOOTIFY_ACTIVE is not 'true'). Notification not sent.");
+            return;
         }
 
-        let message = typeof input === "string"
-            ? input
-            : typeof input === "object"
-                ? input.message
-                : undefined
-        if (message === undefined || message === null) throw new Error("No message provided");
-
-        let title = typeof input === "string"
-            ? undefined
-            : input.title ?? undefined;
-
-        let broadcast = typeof input === "string"
-            ? false
-            : input.broadcast ?? false
-
-        console.log("From nootify_me: ", input);
-
-        if (ACTIVE !== true) {
-            console.log("nootify_me is not active");
-            return
+        const message = typeof input === "string" ? input : input.message;
+        if (!message) {
+            console.error("A message is required to send a notification.");
+            return;
         }
+
+        const title = typeof input === "object" ? input.title : undefined;
+        const broadcast = typeof input === "object" ? input.broadcast ?? false : false;
 
         if (typeof fetch !== 'function') {
-            throw new Error("Fetch API is not available in this environment");
+            console.error("Fetch API is not available in this environment. If on Node.js, consider using a polyfill like 'node-fetch'.");
+            return;
         }
 
         const response = await fetch("https://www.nootifyme.com/api/notification", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                token: APIKEY,
-                title: title,
-                message: message,
-                broadcast: broadcast,
-            }),
+            body: JSON.stringify({ token: apiKey, title, message, broadcast }),
         });
 
-        const responseData = await response.json();
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ error: "Failed to parse error response." }));
+            console.error("Nootify API Error:", errorData.error || `HTTP error! status: ${response.status}`);
+            return;
+        }
 
-        if (responseData.error) throw new Error(responseData.error);
-        return { success: true }
+        const responseData = await response.json();
+        if (responseData.error) {
+            console.error("Nootify API Error:", responseData.error);
+        }
     } catch (error) {
-        return { error: error }
+        console.error("Nootify Error:", error);
     }
-};
+}
+
+
+/**
+ * The universal noot function. Just import and use.
+ * It automatically detects the environment and API key.
+ * This function is non-blocking and does not return a promise.
+ *
+ * @param {SimpleInput | AdvancedInput} input The notification to send. Can be a simple string or an object with title, message, and broadcast options.
+ *
+ * @example
+ * import { noot } from 'nootifyme';
+ *
+ * // Send a simple notification
+ * noot('This just works!');
+ *
+ * // Send a notification with a custom title
+ * noot({ title: 'Custom', message: 'Noot noot!' });
+ *
+ * // Send a push notification to all subscribers
+ * noot({ title: 'Big News', message: 'We just launched a new feature!', broadcast: true });
+ */
+function noot(input: SimpleInput | AdvancedInput) {
+    sendNootification(input);
+}
+
+// --- Named Export ---
+// Export the `noot` function as a named export to enforce its usage.
+export { noot };
